@@ -1,5 +1,5 @@
 import express from "express";
-import UserClient from "./clients/UserClient.js";
+import apiRouter from "./api/index.js";
 
 const PORT = 3000;
 
@@ -13,22 +13,10 @@ app.get("/", (req, res) => {
   }
 });
 
-app.get("/users", (req, res) => {
-  UserClient.getAllUsers(null, (err, data) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-    return res.status(200).json(data);
-  });
-});
+app.use("/api", apiRouter);
 
-app.get("/users/:id", (req, res) => {
-  UserClient.getUser({ id: req.params.id }, (err, data) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-    return res.status(200).json(data);
-  });
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "Not found" });
 });
 
 app.listen(PORT, () => {
