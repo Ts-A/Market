@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "start": "concurrently \"npm run main\" \"npm run user\"",
+    "dev": "concurrently \"npm run main-dev\" \"npm run user-dev\"",
+    "main": "node main/index.js",
+    "main-dev": "nodemon main/index.js",
+    "user": "node user-service/index.js",
+    "user-dev": "nodemon user-service/index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.2",
+    "@grpc/proto-loader": "^0.7.13",
+    "body-parser": "^1.20.3",
+    "concurrently": "^9.0.1",
+    "express": "^4.21.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
