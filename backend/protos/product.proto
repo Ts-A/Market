@@ -27,8 +27,9 @@ message ProductList {
 }
 
 message ProductDetails {
-    string name = 1;
-    string category = 2;
-    float price = 3;
-    int32 stock = 4;
+    string id = 1;
+    string name = 2;
+    string category = 3;
+    float price = 4;
+    int32 stock = 5;
 }

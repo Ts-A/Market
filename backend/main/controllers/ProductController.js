@@ -11,9 +11,24 @@ const ProductController = (service) => ({
       return res.json({ products });
     });
   },
-  createProduct: (req, res) => {},
-  deleteProduct: (req, res) => {},
-  updateProduct: (req, res) => {},
+  createProduct: (req, res) => {
+    service.createProduct(req.body, (err, product) => {
+      if (err) return res.json({ err });
+      return res.json({ product });
+    });
+  },
+  deleteProduct: (req, res) => {
+    service.deleteProduct({ id: req.params.id }, (err, product) => {
+      if (err) return res.json({ err });
+      return res.json({ product });
+    });
+  },
+  editProduct: (req, res) => {
+    service.editProduct({ id: req.params.id, ...req.body }, (err, product) => {
+      if (err) return res.json({ err });
+      return res.json({ product });
+    });
+  },
 });
 
 export default ProductController;
