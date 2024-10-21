@@ -1,3 +1,3 @@
-# User service
+# Products service
 
-> User related apis
+> Products related apis
