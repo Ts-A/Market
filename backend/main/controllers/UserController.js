@@ -1,11 +1,19 @@
-const UserController = {
+const UserController = (service) => ({
   getUser: (req, res) => {
-    return res.json({ message: "user" });
+    service.getUser({ id: req.params.id }, (err, user) => {
+      if (err) return res.json({ err });
+      return res.json({ user });
+    });
   },
   getAllUsers: (req, res) => {
-    console.log(req.url);
-    return res.json({ message: "all users" });
+    service.getAllUsers({}, (err, user) => {
+      if (err) return res.json({ err });
+      return res.json({ user });
+    });
   },
-};
+  createUser: (req, res) => {},
+  deleteUser: (req, res) => {},
+  updateUser: (req, res) => {},
+});
 
 export default UserController;

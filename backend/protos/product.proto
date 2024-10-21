@@ -23,7 +23,7 @@ message ProductId {
 }
 
 message ProductList {
-    repeated Product Products = 1;
+    repeated Product products = 1;
 }
 
 message ProductDetails {

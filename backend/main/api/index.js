@@ -1,11 +1,17 @@
 import { Router } from "express";
-import UserRouter from "./UserRouter.js";
+import userRouter from "./UserRouter.js";
 import UserController from "../controllers/UserController.js";
+import productRouter from "./ProductRouter.js";
+import ProductController from "../controllers/ProductController.js";
+import userClient from "../clients/UserClient.js";
+import productClient from "../clients/ProductClient.js";
+
+const userController = UserController(userClient);
+const productController = ProductController(productClient);
 
 const apiRouter = Router();
 
-const userRouter = UserRouter(apiRouter, UserController);
-
-apiRouter.use("/user", userRouter);
+apiRouter.use("/users", userRouter(userController));
+apiRouter.use("/products", productRouter(productController));
 
 export default apiRouter;

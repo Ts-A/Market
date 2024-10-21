@@ -23,6 +23,9 @@ importers:
       express:
         specifier: ^4.21.1
         version: 4.21.1
+      grpc-promise:
+        specifier: ^1.4.0
+        version: 1.4.0
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
@@ -269,6 +272,9 @@ packages:
 
   gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
+
+  grpc-promise@1.4.0:
+    resolution: {integrity: sha512-4BBXHXb5OjjBh7luylu8vFqL6H6aPn/LeqpQaSBeRzO/Xv95wHW/WkU9TJRqaCTMZ5wq9jTSvlJWp0vRJy1pVA==}
 
   has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
@@ -831,6 +837,8 @@ snapshots:
   gopd@1.0.1:
     dependencies:
       get-intrinsic: 1.2.4
+
+  grpc-promise@1.4.0: {}
 
   has-flag@3.0.0: {}
 

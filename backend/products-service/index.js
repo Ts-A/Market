@@ -19,7 +19,7 @@ const products = [
     id: "1",
     name: "box",
     category: "stationary",
-    price: 500,
+    price: 500.0,
     stock: 10,
   },
   {
@@ -36,9 +36,15 @@ server.addService(productProto.ProductService.service, {
   deleteProduct: () => {},
   editProduct: () => {},
   getAllProducts: (call, callback) => {
-    callback(null, products);
+    callback(null, { products });
   },
-  getProduct: () => {},
+  getProduct: (call, callback) => {
+    const productId = call.request.id;
+    const product = products.find(({ id }) => id === productId);
+    if (!product)
+      callback({ code: grpc.status.NOT_FOUND, details: "Product id invalid" });
+    callback(null, product);
+  },
 });
 
 server.bindAsync(
