@@ -1,8 +1,11 @@
 syntax = "proto3";
 
 service UserService {
-    rpc GetUser (UserId) returns (User);
+    rpc CreateUser (UserInput) returns (User);
+    rpc DeleteUser (UserId) returns (User);
+    rpc EditUser (UserId) returns (User);
     rpc GetAllUsers (Empty) returns (UserList);
+    rpc GetUser (UserId) returns (User);
 }
 
 message Empty {};
@@ -10,6 +13,16 @@ message Empty {};
 message User {
     string id = 1;
     string name = 2;
+    string email = 3;
+    string role = 4;
+    string password = 5;
+}
+
+message UserInput {
+    string name = 2;
+    string email = 3;
+    string role = 4;
+    string password = 5;
 }
 
 message UserId {

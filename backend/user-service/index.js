@@ -1,6 +1,7 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
 import db from "./configs/PrismaClient.js";
+import { v4 as uuidv4 } from "uuid";
 
 const PROTO_PATH = "./protos/user.proto";
 
@@ -14,17 +15,6 @@ const userProtoPackageDefinition = protoLoader.loadSync(PROTO_PATH, {
 const userProto = grpc.loadPackageDefinition(userProtoPackageDefinition);
 
 const server = new grpc.Server();
-
-const users = [
-  {
-    id: "1",
-    name: "ajeet",
-  },
-  {
-    id: "2",
-    name: "ananya",
-  },
-];
 
 server.addService(userProto.UserService.service, {
   getUser: async (call, callback) => {
@@ -61,6 +51,43 @@ server.addService(userProto.UserService.service, {
       });
 
     return callback(null, { users });
+  },
+
+  createUser: async (call, callback) => {
+    const { name, email, role, password } = call.request;
+
+    if (!name || !email || !role || !password)
+      return callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: "missing fields required",
+      });
+
+    const existingUser = await db.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (existingUser)
+      return callback({
+        code: grpc.status.ALREADY_EXISTS,
+        details: "user with email already exists",
+      });
+
+    const user = await db.user.create({
+      data: {
+        id: uuidv4(),
+        name,
+        email,
+        role,
+        password,
+      },
+    });
+
+    if (!user)
+      callback({ code: grpc.status.UNKNOWN, details: "something went wrong" });
+
+    callback(null, user);
   },
 });
 

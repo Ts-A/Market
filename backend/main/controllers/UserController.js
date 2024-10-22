@@ -11,9 +11,24 @@ const UserController = (service) => ({
       return res.json({ user });
     });
   },
-  createUser: (req, res) => {},
-  deleteUser: (req, res) => {},
-  updateUser: (req, res) => {},
+  createUser: (req, res) => {
+    service.createUser({ ...req.body }, (err, user) => {
+      if (err) return res.json({ err });
+      return res.json({ user });
+    });
+  },
+  deleteUser: (req, res) => {
+    service.deleteUser({ ...req.body }, (err, user) => {
+      if (err) return res.json({ err });
+      return res.json({ user });
+    });
+  },
+  editUser: (req, res) => {
+    service.editUser({ ...req.body }, (err, user) => {
+      if (err) return res.json({ err });
+      return res.json({ user });
+    });
+  },
 });
 
 export default UserController;
