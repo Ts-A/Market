@@ -6,7 +6,7 @@ service UserService {
     rpc EditUser (UserId) returns (User);
     rpc GetAllUsers (Empty) returns (UserList);
     rpc GetUser (UserId) returns (User);
-    rpc LoginUser (UserLoginCreds) returns (User);
+    rpc LoginUser (UserLoginCreds) returns (LoginToken);
 }
 
 message Empty {};
@@ -27,7 +27,7 @@ message UserInput {
 }
 
 message UserId {
-    string id = 1;
+    string token = 1;
 }
 
 message UserList {
@@ -39,4 +39,6 @@ message UserLoginCreds {
     string password = 3;
 }
 
-
+message LoginToken {
+    string token = 1;
+}

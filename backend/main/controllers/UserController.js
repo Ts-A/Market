@@ -1,6 +1,10 @@
 const UserController = (service) => ({
   getUser: (req, res) => {
-    service.getUser({ id: req.params.id }, (err, user) => {
+    const authToken = req.headers["authorization"]
+      ? req.headers["authorization"].split("Bearer ")[1]
+      : "";
+    if (!authToken) return res.json({ error: "must be authenticated" });
+    service.getUser({ token: authToken }, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
@@ -30,9 +34,9 @@ const UserController = (service) => ({
     });
   },
   loginUser: (req, res) => {
-    service.loginUser({ ...req.body }, (err, user) => {
+    service.loginUser({ ...req.body }, (err, token) => {
       if (err) return res.json({ err });
-      return res.json({ user });
+      return res.json({ token });
     });
   },
   logoutUser: (req, res) => {
