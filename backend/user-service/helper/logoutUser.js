@@ -29,19 +29,7 @@ export default async (call, callback) => {
     });
   }
 
-  const user = await db.user.findFirst({
-    where: {
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
-    },
-  });
+  await redis.sRem(decoded.id, decoded.sessionId);
 
-  if (!user)
-    return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "No user found",
-    });
-
-  callback(null, user);
+  callback(null, { message: "logged out" });
 };
