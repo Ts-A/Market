@@ -40,7 +40,14 @@ const UserController = (service) => ({
     });
   },
   logoutUser: (req, res) => {
-    // service.logoutUser({ ...req.body }, (err, user) => {});
+    const authToken = req.headers["authorization"]
+      ? req.headers["authorization"].split("Bearer ")[1]
+      : "";
+    if (!authToken) return res.json({ error: "must be authenticated" });
+    service.logoutUser({ token: authToken }, (err, message) => {
+      if (err) return res.json({ err });
+      return res.json({ message });
+    });
   },
 });
 
