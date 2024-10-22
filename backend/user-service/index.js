@@ -1,5 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
+import db from "./configs/PrismaClient.js";
 
 const PROTO_PATH = "./protos/user.proto";
 
@@ -26,16 +27,40 @@ const users = [
 ];
 
 server.addService(userProto.UserService.service, {
-  getUser: (call, callback) => {
+  getUser: async (call, callback) => {
     const userId = call.request.id;
-    const user = users.find(({ id }) => id === userId);
+
+    if (!userId)
+      return callback({
+        code: grpc.status.NOT_FOUND,
+        details: "User id is required",
+      });
+
+    const user = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
     if (!user)
-      callback({ code: grpc.status.NOT_FOUND, details: "User id invalid" });
+      return callback({
+        code: grpc.status.NOT_FOUND,
+        details: "User id invalid",
+      });
+
     callback(null, user);
   },
 
-  getAllUsers: (call, callback) => {
-    callback(null, { users });
+  getAllUsers: async (call, callback) => {
+    const users = await db.user.findMany({});
+
+    if (!users)
+      return callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: "Something went wrong",
+      });
+
+    return callback(null, { users });
   },
 });
 
