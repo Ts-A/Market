@@ -6,6 +6,7 @@ service UserService {
     rpc EditUser (UserId) returns (User);
     rpc GetAllUsers (Empty) returns (UserList);
     rpc GetUser (UserId) returns (User);
+    rpc LoginUser (UserLoginCreds) returns (User);
 }
 
 message Empty {};
@@ -32,4 +33,10 @@ message UserId {
 message UserList {
     repeated User users = 1;
 }
+
+message UserLoginCreds {
+    string email = 1;
+    string password = 3;
+}
+
 

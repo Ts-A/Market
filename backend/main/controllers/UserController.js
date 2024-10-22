@@ -29,6 +29,15 @@ const UserController = (service) => ({
       return res.json({ user });
     });
   },
+  loginUser: (req, res) => {
+    service.loginUser({ ...req.body }, (err, user) => {
+      if (err) return res.json({ err });
+      return res.json({ user });
+    });
+  },
+  logoutUser: (req, res) => {
+    // service.logoutUser({ ...req.body }, (err, user) => {});
+  },
 });
 
 export default UserController;
