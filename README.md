@@ -21,9 +21,13 @@ To build a full-fledged ecommerce application using microservices architecture.
 
 ## Key Resources
 
-![Auth](image.png)
+![Auth](resources/high-level-auth.png)
+![Product Flow](resources/product-flow.png)
+![Cart Flow](resources/cart-flow.png)
+![User Flow](resources/user-flow.png)
+![Payment Flow](resources/payment-flow.png)
 
 ## TODO
 
-- [ ] try-catch for all db operations
-- [ ]
+- [ ] try catch for all handlers, controllers
+- [ ] system role for certain operations
