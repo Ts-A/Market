@@ -1,10 +1,6 @@
 const UserController = (service) => ({
   getUser: (req, res) => {
-    const authToken = req.headers["authorization"]
-      ? req.headers["authorization"].split("Bearer ")[1]
-      : "";
-    if (!authToken) return res.json({ error: "must be authenticated" });
-    service.getUser({ token: authToken }, (err, user) => {
+    service.getUser({ token: req.token }, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
@@ -22,13 +18,13 @@ const UserController = (service) => ({
     });
   },
   deleteUser: (req, res) => {
-    service.deleteUser({ ...req.body }, (err, user) => {
+    service.deleteUser({ token: req.token }, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
   },
   editUser: (req, res) => {
-    service.editUser({ ...req.body }, (err, user) => {
+    service.editUser({ token: req.token }, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
@@ -40,11 +36,7 @@ const UserController = (service) => ({
     });
   },
   logoutUser: (req, res) => {
-    const authToken = req.headers["authorization"]
-      ? req.headers["authorization"].split("Bearer ")[1]
-      : "";
-    if (!authToken) return res.json({ error: "must be authenticated" });
-    service.logoutUser({ token: authToken }, (err, message) => {
+    service.logoutUser({ token: req.token }, (err, message) => {
       if (err) return res.json({ err });
       return res.json({ message });
     });

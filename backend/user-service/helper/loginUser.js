@@ -20,6 +20,12 @@ export default async (call, callback) => {
     },
   });
 
+  if (!user)
+    return callback({
+      code: GRPC_STATUS.PERMISSION_DENIED,
+      details: "Invalid credentials",
+    });
+
   if (!brcypt.compareSync(password, user.password))
     return callback({
       code: GRPC_STATUS.PERMISSION_DENIED,
