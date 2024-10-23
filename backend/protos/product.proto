@@ -1,14 +1,12 @@
 syntax = "proto3";
 
 service ProductService {
-    rpc CreateProduct (ProductDetails) returns (Product);
-    rpc DeleteProduct (ProductDetails) returns (Product);
-    rpc EditProduct (ProductDetails) returns (Product);
-    rpc GetAllProducts (Empty) returns (ProductList);
-    rpc GetProduct (ProductId) returns (Product);
+    rpc CreateProduct (ProductDetails) returns (ProductResponse);
+    rpc DeleteProduct (ProductId) returns (ProductResponse);
+    rpc EditProduct (ProductDetails) returns (ProductResponse);
+    rpc GetAllProducts (ProductId) returns (ProductList);
+    rpc GetProduct (ProductId) returns (ProductResponse);
 }
-
-message Empty {};
 
 message Product {
     string id = 1;
@@ -19,7 +17,8 @@ message Product {
 }
 
 message ProductId {
-    string id = 1;
+    optional string id = 1;
+    optional string token = 2;
 }
 
 message ProductList {
@@ -27,6 +26,15 @@ message ProductList {
 }
 
 message ProductDetails {
+    optional string id = 1;
+    string name = 2;
+    string category = 3;
+    float price = 4;
+    int32 stock = 5;
+    optional string token = 6;
+}
+
+message ProductResponse {
     string id = 1;
     string name = 2;
     string category = 3;
