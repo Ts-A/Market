@@ -22,3 +22,8 @@ To build a full-fledged ecommerce application using microservices architecture.
 ## Key Resources
 
 ![Auth](image.png)
+
+## TODO
+
+- [ ] try-catch for all db operations
+- [ ]

@@ -12,22 +12,28 @@ const ProductController = (service) => ({
     });
   },
   createProduct: (req, res) => {
-    service.createProduct(req.body, (err, product) => {
+    service.createProduct({ ...req.body, token: req.token }, (err, product) => {
       if (err) return res.json({ err });
       return res.json({ product });
     });
   },
   deleteProduct: (req, res) => {
-    service.deleteProduct({ id: req.params.id }, (err, product) => {
-      if (err) return res.json({ err });
-      return res.json({ product });
-    });
+    service.deleteProduct(
+      { id: req.params.id, token: req.token },
+      (err, product) => {
+        if (err) return res.json({ err });
+        return res.json({ product });
+      }
+    );
   },
   editProduct: (req, res) => {
-    service.editProduct({ id: req.params.id, ...req.body }, (err, product) => {
-      if (err) return res.json({ err });
-      return res.json({ product });
-    });
+    service.editProduct(
+      { id: req.params.id, ...req.body, token: req.token },
+      (err, product) => {
+        if (err) return res.json({ err });
+        return res.json({ product });
+      }
+    );
   },
 });
 
