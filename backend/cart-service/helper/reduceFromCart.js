@@ -27,35 +27,41 @@ export default async (call, callback) => {
       },
     });
 
-    console.log(cart);
-
     if (!cart) throw new Error("Cart not found");
 
-    // let productInCart = await db.cartProduct.findFirst({
-    //   where: {
-    //     cartId: cart.id,
-    //     productId: productId,
-    //   },
-    // });
+    let productInCart = await db.cartProduct.findFirst({
+      where: {
+        cartId: cart.id,
+        productId: productId,
+      },
+    });
 
-    // if (!productInCart) {
-    //   productInCart = await db.cartProduct.create({
-    //     data: {
-    //       cartId: cart.id,
-    //       productId: productId,
-    //       quantiy,
-    //     },
-    //   });
-    // } else {
-    //   await db.cartProduct.update({
-    //     where: {
-    //       cartId: cart.id,
-    //       productId: productId,
-    //       quantiy: productInCart.quantiy + quantiy,
-    //     },
-    //   });
-    // }
+    if (!productInCart) throw new Error("Can't find product in cart");
 
+    if (productInCart.quantiy > quantiy)
+      await db.cartProduct.update({
+        where: {
+          cartId: cart.id,
+          productId: productId,
+          quantiy: productInCart.quantiy - quantiy,
+        },
+      });
+    else {
+      await db.cartProduct.delete({
+        where: {
+          cartId: cart.id,
+          productId: productId,
+        },
+      });
+      await db.cart.update({
+        where: {
+          id: cart.id,
+        },
+        data: {
+          products: cart.products,
+        },
+      });
+    }
     callback(null, { message: "Added to cart" });
   } catch (error) {
     callback({ code: GRPC_STATUS.PERMISSION_DENIED, details: error.message });

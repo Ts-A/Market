@@ -15,15 +15,37 @@ export default async (call, callback) => {
     if (!(await redis.sIsMember(decoded.id, decoded.sessionId)))
       throw new Error("Session has expired");
 
-    const cart = await db.cart.findFirst({
+    const cart = await db.cart.findUnique({
       where: {
         userId: decoded.id,
+      },
+      select: {
+        products: {
+          select: {
+            quantiy: true,
+            product: {
+              select: {
+                id: true,
+                price: true,
+                name: true,
+                category: true,
+              },
+            },
+          },
+        },
       },
     });
 
     if (!cart) throw new Error("No cart found");
 
-    callback(null, { cart });
+    const formattedCart = {
+      products: cart.products.map((product) => ({
+        quantiy: product.quantiy,
+        ...product.product,
+      })),
+    };
+
+    callback(null, formattedCart);
   } catch (error) {
     callback({ code: GRPC_STATUS.PERMISSION_DENIED, details: error.message });
   }

@@ -1,15 +1,19 @@
 syntax = "proto3";
 
 service CartService {
-    rpc AddToCart (CartPayload) returns (Cart);
-    rpc RemoveFromCart (CartPayload) returns (Cart);
+    rpc AddToCart (CartPayload) returns (CartResponse);
+    rpc RemoveFromCart (CartPayload) returns (CartResponse);
     rpc ShowCart (User) returns (Cart);
-    rpc EmptyCart (User) returns (Cart);
-    rpc CreateCart (User) returns (Cart);
+    rpc EmptyCart (User) returns (CartResponse);
+    rpc CreateCart (User) returns (CartResponse);
 }
 
 message User {
     string token = 1;
+}
+
+message CartResponse {
+    string message = 1;
 }
 
 message CartPayload {
@@ -23,6 +27,14 @@ message Item {
     uint32 count = 2;
 }
 
+message Product {
+    string id = 1;
+    string name = 2;
+    string category = 3;
+    float price = 4;
+    uint32 quantity = 5;
+}
+
 message Cart {
-    repeated Item items = 1;
+    repeated Product products = 1;
 }
