@@ -2,7 +2,7 @@ syntax = "proto3";
 
 service CartService {
     rpc AddToCart (CartPayload) returns (CartResponse);
-    rpc RemoveFromCart (CartPayload) returns (CartResponse);
+    rpc removeFromCart (CartPayload) returns (CartResponse);
     rpc ShowCart (User) returns (Cart);
     rpc EmptyCart (User) returns (CartResponse);
     rpc CreateCart (User) returns (CartResponse);
