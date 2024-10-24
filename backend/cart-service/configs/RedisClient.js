@@ -1,10 +1,9 @@
 import { createClient } from "redis";
 
-let redis;
+let redis = await createClient().connect();
 
 try {
-  redis = await createClient().connect();
-  if (redis) console.log("Connected to redis from users microservice");
+  if (redis) console.log("Connected to redis from carts microservice");
 } catch (error) {
   console.log("Unable to connect to redis");
 }

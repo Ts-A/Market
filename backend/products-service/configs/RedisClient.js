@@ -1,7 +1,12 @@
 import { createClient } from "redis";
 
-const redis = await createClient()
-  .on("error", (err) => console.log("Redis Client Error", err))
-  .connect();
+let redis;
+
+try {
+  redis = await createClient().connect();
+  if (redis) console.log("Connected to redis from products microservice");
+} catch (error) {
+  console.log("Unable to connect to redis");
+}
 
 export default redis;

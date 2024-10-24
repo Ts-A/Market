@@ -1,13 +1,15 @@
 {
   "scripts": {
-    "start": "concurrently \"npm run main\" \"npm run user\" \"npm run products\"",
-    "dev": "concurrently \"npm run main-dev\" \"npm run user-dev\" \"npm run products-dev\"",
+    "start": "concurrently \"npm run main\" \"npm run user\" \"npm run products\" \"npm run cart\"",
+    "dev": "concurrently \"npm run main-dev\" \"npm run user-dev\" \"npm run products-dev\" \"npm run cart-dev\"",
     "main": "node main/index.js",
     "main-dev": "nodemon main/index.js",
     "user": "node user-service/index.js",
     "user-dev": "nodemon user-service/index.js",
     "products": "node products-service/index.js",
-    "products-dev": "nodemon products-service/index.js"
+    "products-dev": "nodemon products-service/index.js",
+    "cart": "node cart-service/index.js",
+    "cart-dev": "nodemon cart-service/index.js"
   },
   "type": "module",
   "dependencies": {

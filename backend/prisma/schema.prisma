@@ -4,7 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,17 +15,40 @@ datasource db {
 }
 
 model Product {
-  id String @id
-  name String
+  id       String @id
+  name     String
   category String
-  price Float
-  stock Int
+  price    Float
+  stock    Int
+
+  carts CartProduct[]
 }
 
 model User {
-  id String @id
-  name String
-  email String
-  role String
+  id       String @id
+  name     String
+  email    String
+  role     String
   password String
+  cart     Cart?
+}
+
+model Cart {
+  id String @id()
+
+  userId   String        @unique
+  products CartProduct[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model CartProduct {
+  cartId    String
+  productId String
+  quantiy   Int
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@id([cartId, productId])
 }
