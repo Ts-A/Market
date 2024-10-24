@@ -6,32 +6,33 @@ import redis from "../configs/RedisClient.js";
 
 export default async (call, callback) => {
   try {
-    const { token } = call.request;
-    if (!token) throw new Error("Not authorized");
-
-    let decoded = jwt.verify(token, "secret");
+    const { userId } = call.request;
 
     // check for system role
-    // add cart id to redis for faster access
+
+    if (!userId) throw new Error("Required user id");
 
     const cart = await db.cart.findFirst({
       where: {
-        userId: decoded.id,
+        userId,
       },
     });
 
-    if (cart) callback(null, { message: "cart exists for user" });
+    if (cart)
+      callback(null, { message: "cart exists for user", cartId: cart.id });
 
     const newCart = await db.cart.create({
       data: {
         id: uuidv4(),
-        userId: decoded.id,
+        userId,
       },
     });
 
     if (!newCart) throw new Error("Unable to create a cart");
 
-    callback(null, { message: "cart created" });
+    console.log(newCart);
+
+    callback(null, { message: "cart created", cartId: newCart.id });
   } catch (error) {
     callback({
       code: GRPC_STATUS.PERMISSION_DENIED,

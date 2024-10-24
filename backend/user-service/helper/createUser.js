@@ -4,6 +4,18 @@ import { v4 as uuidv4 } from "uuid";
 import brcypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
+import cartClient from "../configs/CartClient.js";
+
+const createCart = (userId) => {
+  return new Promise((resolve, reject) => {
+    cartClient.createCart({ userId }, (err, data) => {
+      if (err) reject("Unable to create cart for the user");
+
+      console.log(data);
+      resolve(data.cartId);
+    });
+  });
+};
 
 export default async (call, callback) => {
   const { name, email, role, password } = call.request;
@@ -37,15 +49,23 @@ export default async (call, callback) => {
       role,
       password: brcyptPassword,
     },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+    },
   });
 
   if (!user)
     callback({ code: GRPC_STATUS.UNKNOWN, details: "something went wrong" });
 
+  let cartId = "";
+  if (user.role === "user") cartId = await createCart(user.id);
+
   const sessionId = uuidv4();
 
   const token = jwt.sign(
-    { email: user.email, role: user.role, id: user.id, sessionId },
+    { email: user.email, role: user.role, id: user.id, sessionId, cartId },
     "secret"
   );
 

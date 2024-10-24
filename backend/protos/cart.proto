@@ -10,11 +10,13 @@ service CartService {
 }
 
 message User {
-    string token = 1;
+    optional string token = 1;
+    optional string userId = 2;
 }
 
 message CartResponse {
     string message = 1;
+    optional string cartId = 2;
 }
 
 message CartPayload {
