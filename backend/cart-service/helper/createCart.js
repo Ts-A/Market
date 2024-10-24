@@ -12,6 +12,7 @@ export default async (call, callback) => {
     let decoded = jwt.verify(token, "secret");
 
     // check for system role
+    // add cart id to redis for faster access
 
     const cart = await db.cart.findFirst({
       where: {
@@ -19,7 +20,7 @@ export default async (call, callback) => {
       },
     });
 
-    if (cart) callback(null, { cart });
+    if (cart) callback(null, { message: "cart exists for user" });
 
     const newCart = await db.cart.create({
       data: {
@@ -28,7 +29,9 @@ export default async (call, callback) => {
       },
     });
 
-    callback(null, { newCart });
+    if (!newCart) throw new Error("Unable to create a cart");
+
+    callback(null, { message: "cart created" });
   } catch (error) {
     callback({
       code: GRPC_STATUS.PERMISSION_DENIED,

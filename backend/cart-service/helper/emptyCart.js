@@ -12,18 +12,21 @@ export default async (call, callback) => {
 
     // check for system role / user role
 
-    const cart = await db.cart.update({
+    const cart = await db.cart.findUnique({
       where: {
         userId: decoded.id,
-      },
-      data: {
-        products: [],
       },
     });
 
     if (!cart) throw new Error("No cart found");
 
-    callback(null, { cart });
+    await db.cartProduct.deleteMany({
+      where: {
+        cartId: cart.id,
+      },
+    });
+
+    callback(null, { message: "emptied cart" });
   } catch (error) {
     callback({
       code: GRPC_STATUS.PERMISSION_DENIED,
