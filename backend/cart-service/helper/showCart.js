@@ -22,7 +22,7 @@ export default async (call, callback) => {
       select: {
         products: {
           select: {
-            quantiy: true,
+            quantity: true,
             product: {
               select: {
                 id: true,
@@ -40,7 +40,7 @@ export default async (call, callback) => {
 
     const formattedCart = {
       products: cart.products.map((product) => ({
-        quantiy: product.quantiy,
+        quantity: product.quantity,
         ...product.product,
       })),
     };

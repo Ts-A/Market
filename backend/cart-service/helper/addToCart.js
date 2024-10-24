@@ -1,60 +1,65 @@
 import db from "../configs/PrismaClient.js";
 import { status as GRPC_STATUS } from "@grpc/grpc-js";
 import jwt from "jsonwebtoken";
+import redis from "../configs/RedisClient.js";
 
 const ALLoWED_ROLES = ["user", "system"];
 
 export default async (call, callback) => {
   try {
-    const { token, quantiy, productId } = call.request;
+    const { token, quantity, productId } = call.request;
 
     if (!token) throw new Error("No token found");
 
-    const decoded = jwt.verify(token, "secret");
-
     // check for role, session
+    let decoded = jwt.verify(token, "secret");
 
-    const userId = decoded.userId;
+    if (decoded.role !== "user") throw new Error("Only accessible for users");
+
+    if (!(await redis.sIsMember(decoded.id, decoded.sessionId)))
+      throw new Error("Session has expired");
 
     const cart = await db.cart.findUnique({
       where: {
-        userId,
+        userId: decoded.id,
       },
-      include: {
-        products: {
-          product: true,
+      select: {
+        id: true,
+      },
+    });
+
+    if (!cart) throw new Error("No cart found");
+
+    let productInCart = await db.cartProduct.findUnique({
+      where: {
+        cartId_productId: {
+          cartId: cart.id,
+          productId,
         },
       },
     });
 
-    console.log(cart);
-
-    if (!cart) throw new Error("Cart not found");
-
-    // let productInCart = await db.cartProduct.findFirst({
-    //   where: {
-    //     cartId: cart.id,
-    //     productId: productId,
-    //   },
-    // });
-
-    // if (!productInCart) {
-    //   productInCart = await db.cartProduct.create({
-    //     data: {
-    //       cartId: cart.id,
-    //       productId: productId,
-    //       quantiy,
-    //     },
-    //   });
-    // } else {
-    //   await db.cartProduct.update({
-    //     where: {
-    //       cartId: cart.id,
-    //       productId: productId,
-    //       quantiy: productInCart.quantiy + quantiy,
-    //     },
-    //   });
-    // }
+    if (!productInCart) {
+      productInCart = await db.cartProduct.create({
+        data: {
+          cartId: cart.id,
+          productId,
+          quantity,
+        },
+      });
+    } else {
+      await db.cartProduct.update({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
+        },
+        data: {
+          quantity: { increment: quantity },
+        },
+      });
+    }
 
     callback(null, { message: "Added to cart" });
   } catch (error) {

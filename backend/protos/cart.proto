@@ -19,12 +19,7 @@ message CartResponse {
 message CartPayload {
     string productId = 1;
     string token = 2;
-    uint32 count = 3;
-}
-
-message Item {
-    string productId = 1;
-    uint32 count = 2;
+    uint32 quantity = 3;
 }
 
 message Product {
