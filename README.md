@@ -5,10 +5,10 @@ To build a full-fledged ecommerce application using microservices architecture.
 ## Services
 
 - [ ] Frontend
-- [ ] Main Service
-- [ ] User Service
-- [ ] Product Service
-- [ ] Cart Service
+- [x] [Main Service](/backend/main/)
+- [x] [User Service](/backend/user-service/)
+- [x] [Product Service](/backend/products-service/)
+- [x] [Cart Service](/backend/cart-service/)
 - [ ] Payment Service
 
 ## Technologies
@@ -26,8 +26,3 @@ To build a full-fledged ecommerce application using microservices architecture.
 ![Cart Flow](resources/cart-flow.png)
 ![User Flow](resources/user-flow.png)
 ![Payment Flow](resources/payment-flow.png)
-
-## TODO
-
-- [ ] try catch for all handlers, controllers
-- [ ] system role for certain operations
