@@ -30,11 +30,13 @@ export default async (call, callback) => {
 
     if (!cart) throw new Error("No cart found");
 
+    console.log(cart);
+
     let productInCart = await db.cartProduct.findUnique({
       where: {
         cartId_productId: {
           cartId: cart.id,
-          productId,
+          productId: productId,
         },
       },
     });

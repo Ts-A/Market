@@ -11,7 +11,6 @@ const createCart = (userId) => {
     cartClient.createCart({ userId }, (err, data) => {
       if (err) reject("Unable to create cart for the user");
 
-      console.log(data);
       resolve(data.cartId);
     });
   });

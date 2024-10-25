@@ -2,6 +2,21 @@ import db from "../configs/PrismaClient.js";
 import { status as GRPC_STATUS } from "@grpc/grpc-js";
 import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
+import cartClient from "../configs/CartClient.js";
+
+const deleteCart = (userId, cartId) => {
+  console.log(userId, cartId);
+  return new Promise((resolve, reject) => {
+    cartClient.deleteCart({ userId, cartId }, (err, data) => {
+      if (err) {
+        console.log(err);
+        reject("Unable to delete cart for the user");
+      }
+
+      resolve(data);
+    });
+  });
+};
 
 export default async (call, callback) => {
   const { token: authToken } = call.request;
@@ -29,6 +44,8 @@ export default async (call, callback) => {
     });
   }
 
+  const response = await deleteCart(decoded.id, decoded.cartId);
+
   const user = await db.user.delete({
     where: {
       id: decoded.id,
@@ -43,5 +60,6 @@ export default async (call, callback) => {
 
   await redis.del(decoded.id);
 
+  console.log(response);
   callback(null, { message: "User successfully deleted" });
 };

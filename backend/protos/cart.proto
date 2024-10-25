@@ -12,6 +12,7 @@ service CartService {
 message User {
     optional string token = 1;
     optional string userId = 2;
+    optional string cartId = 3;
 }
 
 message CartResponse {

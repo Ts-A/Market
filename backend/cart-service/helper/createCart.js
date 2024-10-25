@@ -30,8 +30,6 @@ export default async (call, callback) => {
 
     if (!newCart) throw new Error("Unable to create a cart");
 
-    console.log(newCart);
-
     callback(null, { message: "cart created", cartId: newCart.id });
   } catch (error) {
     callback({
