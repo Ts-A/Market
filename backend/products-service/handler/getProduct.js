@@ -1,23 +1,22 @@
-import { status as STATUS } from "@grpc/grpc-js";
+import { status as GRPC_STATUS } from "@grpc/grpc-js";
 import db from "../configs/PrismaClient.js";
 
 export default async (call, callback) => {
-  const productId = call.request.id;
+  try {
+    const { id } = call.request;
 
-  if (!productId)
-    callback({
-      code: STATUS.INVALID_ARGUMENT,
-      details: "Product id required",
+    if (!id) throw new Error("Missing fields: id");
+
+    const product = await db.product.findFirst({
+      where: {
+        id,
+      },
     });
 
-  const product = await db.product.findFirst({
-    where: {
-      id: productId,
-    },
-  });
+    if (!product) throw new Error("Product not found");
 
-  if (!product)
-    callback({ code: STATUS.NOT_FOUND, details: "Product id invalid" });
-
-  callback(null, product);
+    callback(null, product);
+  } catch (error) {
+    callback({ code: GRPC_STATUS.NOT_FOUND, details: error.message });
+  }
 };

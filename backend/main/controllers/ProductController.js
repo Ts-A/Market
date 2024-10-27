@@ -1,13 +1,9 @@
 export default (service) => ({
   getProduct: (req, res) => {
-    service.getProduct(
-      { id: req.params.id },
-      req.grpcMetadata,
-      (err, product) => {
-        if (err) return res.json({ err });
-        return res.json({ product });
-      }
-    );
+    service.getProduct({ id: req.params.id }, (err, product) => {
+      if (err) return res.json({ err });
+      return res.json({ product });
+    });
   },
   getAllProducts: (req, res) => {
     service.getAllProducts({}, (err, products) => {
@@ -16,7 +12,7 @@ export default (service) => ({
     });
   },
   createProduct: (req, res) => {
-    service.createProduct({ ...req.body, token: req.token }, (err, product) => {
+    service.createProduct({ ...req.body }, req.grpcMetadata, (err, product) => {
       if (err) return res.json({ err });
       return res.json({ product });
     });
@@ -24,6 +20,7 @@ export default (service) => ({
   deleteProduct: (req, res) => {
     service.deleteProduct(
       { id: req.params.id, token: req.token },
+      req.grpcMetadata,
       (err, product) => {
         if (err) return res.json({ err });
         return res.json({ product });
@@ -32,7 +29,8 @@ export default (service) => ({
   },
   editProduct: (req, res) => {
     service.editProduct(
-      { id: req.params.id, ...req.body, token: req.token },
+      { id: req.params.id, ...req.body },
+      req.grpcMetadata,
       (err, product) => {
         if (err) return res.json({ err });
         return res.json({ product });
