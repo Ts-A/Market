@@ -11,6 +11,24 @@ To build a full-fledged ecommerce application using microservices architecture.
 - [x] [Cart Service](/backend/cart-service/)
 - [ ] Payment Service
 
+## Setup
+
+- Backend
+
+```bash
+cd backend
+cp .env.local .env
+# add the environment variables
+pnpm install
+pnpm run dev
+```
+
+- Prisma
+
+```bash
+npx prisma studio
+```
+
 ## Technologies
 
 - `expressjs` for the backend
