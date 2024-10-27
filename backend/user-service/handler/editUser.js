@@ -1,7 +1,6 @@
 import db from "../configs/PrismaClient.js";
 import { status as GRPC_STATUS } from "@grpc/grpc-js";
-import jwt from "jsonwebtoken";
-import redis from "../configs/RedisClient.js";
+import { authUser } from "../helper/index.js";
 
 const ALLOWED_ROLES = ["user", "system"];
 const ALLOWED_UPDATES = ["email", "name"];
@@ -9,17 +8,12 @@ const ALLOWED_UPDATES = ["email", "name"];
 // TODO: Implement edit user
 export default async (call, callback) => {
   try {
-    const token = call.metadata.get("authorization")[0];
-    if (!token) throw new Error("Requires an authorization to access.");
-
-    const authToken = token.split("Bearer ")[1];
-    const userPayload = jwt.verify(authToken, "secret");
-
-    if (!ALLOWED_ROLES.includes(userPayload.role))
-      throw new Error("Unauthorized to access.");
-
-    if (!(await redis.sIsMember(userPayload.id, userPayload.sessionId)))
-      throw new Error("Session has expired");
+    const userPayload = await authUser(
+      call.metadata.get("authorization")
+        ? call.metadata.get("authorization")[0]
+        : "",
+      ALLOWED_ROLES
+    );
 
     let updateData = {};
 
@@ -51,6 +45,7 @@ export default async (call, callback) => {
 
     callback(null, { message: "User updated" });
   } catch (error) {
+    console.log(error);
     callback({ code: GRPC_STATUS.PERMISSION_DENIED, details: error.message });
   }
 };

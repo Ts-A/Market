@@ -1,6 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
-import userHelper from "./helper/index.js";
+import userHandler from "./handler/index.js";
 
 const PROTO_PATH = "./protos/user.proto";
 
@@ -15,7 +15,7 @@ const userProto = grpc.loadPackageDefinition(userProtoPackageDefinition);
 
 const server = new grpc.Server();
 
-server.addService(userProto.UserService.service, userHelper);
+server.addService(userProto.UserService.service, userHandler);
 
 server.bindAsync(
   "127.0.0.1:30043",

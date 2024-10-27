@@ -4,17 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import brcypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
-import cartClient from "../configs/CartClient.js";
-
-const createCart = (userId) => {
-  return new Promise((resolve, reject) => {
-    cartClient.createCart({ userId }, (err, data) => {
-      if (err) reject("Unable to create cart for the user");
-
-      resolve(data.cartId);
-    });
-  });
-};
+import { createCart } from "../helper/index.js";
 
 export default async (call, callback) => {
   try {
