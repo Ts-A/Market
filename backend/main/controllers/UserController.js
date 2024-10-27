@@ -32,7 +32,7 @@ export default (service) => ({
   editUser: (req, res) => {
     const metadata = new Metadata();
     metadata.add("authorization", req.token);
-    service.editUser({}, metadata, (err, user) => {
+    service.editUser({ ...req.body }, metadata, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });

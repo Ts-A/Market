@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
 
 const ALLOWED_ROLES = ["user", "system"];
+const ALLOWED_UPDATES = ["email", "name"];
 
 // TODO: Implement edit user
 export default async (call, callback) => {
@@ -20,19 +21,35 @@ export default async (call, callback) => {
     if (!(await redis.sIsMember(userPayload.id, userPayload.sessionId)))
       throw new Error("Session has expired");
 
-    const { email, name } = call.request;
-    //   let updateData = {}
+    let updateData = {};
+
+    for (let [key, value] of Object.entries(call.request)) {
+      if (!ALLOWED_UPDATES.includes(key)) continue;
+
+      /**
+       * Todo email unique verification logic before update
+       */
+      if (key == "email") {
+        continue;
+      }
+
+      updateData[key] = value;
+    }
+
+    console.log(updateData);
 
     const user = await db.user.update({
       where: {
         id: userPayload.id,
       },
-      data: {},
+      data: {
+        ...updateData,
+      },
     });
 
     if (!user) throw new Error("No user found");
 
-    callback(null, user);
+    callback(null, { message: "User updated" });
   } catch (error) {
     callback({ code: GRPC_STATUS.PERMISSION_DENIED, details: error.message });
   }
