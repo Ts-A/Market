@@ -2,7 +2,8 @@
 
 > Entry point for all backend calls from client
 
-## Microservices
+## Supporting Microservices
 
 1. User Microservice
 2. Products Microservice
+3. Carts Microservice

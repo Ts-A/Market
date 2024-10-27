@@ -1,4 +1,4 @@
-const UserController = (service) => ({
+export default (service) => ({
   getUser: (req, res) => {
     service.getUser({ token: req.token }, (err, user) => {
       if (err) return res.json({ err });
@@ -42,5 +42,3 @@ const UserController = (service) => ({
     });
   },
 });
-
-export default UserController;

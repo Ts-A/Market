@@ -14,9 +14,7 @@ const CartService = grpc.loadPackageDefinition(
   cartProtoPackageDefinition
 ).CartService;
 
-const cartClient = new CartService(
+export default new CartService(
   "localhost:30045",
   grpc.credentials.createInsecure()
 );
-
-export default cartClient;

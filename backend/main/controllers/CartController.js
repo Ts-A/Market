@@ -1,4 +1,4 @@
-const CartController = (service) => ({
+export default (service) => ({
   showCart: (req, res) => {
     service.showCart({ token: req.token }, (err, cart) => {
       if (err) return res.json({ err });
@@ -27,5 +27,3 @@ const CartController = (service) => ({
     });
   },
 });
-
-export default CartController;

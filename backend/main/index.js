@@ -1,8 +1,11 @@
 import express from "express";
 import apiRouter from "./api/index.js";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
 
-const PORT = 3000;
+dotenv.config({ path: "./.env" });
+
+const PORT = process.env.MAIN_SERVICE_PORT || 3000;
 
 const app = express();
 

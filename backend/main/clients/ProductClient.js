@@ -14,9 +14,7 @@ const ProductService = grpc.loadPackageDefinition(
   productProtoPackageDefinition
 ).ProductService;
 
-const productClient = new ProductService(
+export default new ProductService(
   "localhost:30044",
   grpc.credentials.createInsecure()
 );
-
-export default productClient;

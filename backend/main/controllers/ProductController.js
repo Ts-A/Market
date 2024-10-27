@@ -1,4 +1,4 @@
-const ProductController = (service) => ({
+export default (service) => ({
   getProduct: (req, res) => {
     service.getProduct({ id: req.params.id }, (err, product) => {
       if (err) return res.json({ err });
@@ -36,5 +36,3 @@ const ProductController = (service) => ({
     );
   },
 });
-
-export default ProductController;

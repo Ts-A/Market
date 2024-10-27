@@ -14,9 +14,7 @@ const UserService = grpc.loadPackageDefinition(
   userProtoPackageDefinition
 ).UserService;
 
-const userClient = new UserService(
+export default new UserService(
   "localhost:30043",
   grpc.credentials.createInsecure()
 );
-
-export default userClient;
