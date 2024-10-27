@@ -2,12 +2,12 @@ syntax = "proto3";
 
 service UserService {
     rpc CreateUser (UserInput) returns (Token);
-    rpc DeleteUser (Token) returns (Deleted);
-    rpc EditUser (Token) returns (User);
+    rpc DeleteUser (Empty) returns (Deleted);
+    rpc EditUser (Empty) returns (User);
     rpc GetAllUsers (Empty) returns (UserList);
-    rpc GetUser (Token) returns (User);
+    rpc GetUser (Empty) returns (User);
     rpc LoginUser (UserLoginCreds) returns (Token);
-    rpc LogoutUser (Token) returns (LoggedOut);
+    rpc LogoutUser (Empty) returns (LoggedOut);
 }
 
 message Empty {};
@@ -17,7 +17,6 @@ message User {
     string name = 2;
     string email = 3;
     string role = 4;
-    string password = 5;
 }
 
 message Deleted {

@@ -1,6 +1,10 @@
+import { Metadata } from "@grpc/grpc-js";
+
 export default (service) => ({
   getUser: (req, res) => {
-    service.getUser({ token: req.token }, (err, user) => {
+    const metadata = new Metadata();
+    metadata.add("authorization", req.token);
+    service.getUser({ token: req.token }, metadata, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
@@ -18,13 +22,17 @@ export default (service) => ({
     });
   },
   deleteUser: (req, res) => {
-    service.deleteUser({ token: req.token }, (err, user) => {
+    const metadata = new Metadata();
+    metadata.add("authorization", req.token);
+    service.deleteUser({}, metadata, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
   },
   editUser: (req, res) => {
-    service.editUser({ token: req.token }, (err, user) => {
+    const metadata = new Metadata();
+    metadata.add("authorization", req.token);
+    service.editUser({}, metadata, (err, user) => {
       if (err) return res.json({ err });
       return res.json({ user });
     });
@@ -36,7 +44,9 @@ export default (service) => ({
     });
   },
   logoutUser: (req, res) => {
-    service.logoutUser({ token: req.token }, (err, message) => {
+    const metadata = new Metadata();
+    metadata.add("authorization", req.token);
+    service.logoutUser({}, metadata, (err, message) => {
       if (err) return res.json({ err });
       return res.json({ message });
     });

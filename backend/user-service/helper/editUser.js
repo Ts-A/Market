@@ -3,48 +3,37 @@ import { status as GRPC_STATUS } from "@grpc/grpc-js";
 import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
 
+const ALLOWED_ROLES = ["user", "system"];
+
 // TODO: Implement edit user
 export default async (call, callback) => {
-  const { token: authToken, email, name } = call.request;
-
-  if (!authToken)
-    return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "No token",
-    });
-
-  var decoded;
-
   try {
-    decoded = jwt.verify(authToken, "secret");
+    const token = call.metadata.get("authorization")[0];
+    if (!token) throw new Error("Requires an authorization to access.");
+
+    const authToken = token.split("Bearer ")[1];
+    const userPayload = jwt.verify(authToken, "secret");
+
+    if (!ALLOWED_ROLES.includes(userPayload.role))
+      throw new Error("Unauthorized to access.");
+
+    if (!(await redis.sIsMember(userPayload.id, userPayload.sessionId)))
+      throw new Error("Session has expired");
+
+    const { email, name } = call.request;
+    //   let updateData = {}
+
+    const user = await db.user.update({
+      where: {
+        id: userPayload.id,
+      },
+      data: {},
+    });
+
+    if (!user) throw new Error("No user found");
+
+    callback(null, user);
   } catch (error) {
-    return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "Invalid user token",
-    });
+    callback({ code: GRPC_STATUS.PERMISSION_DENIED, details: error.message });
   }
-
-  if (!(await redis.sIsMember(decoded.id, decoded.sessionId))) {
-    return callback({
-      code: GRPC_STATUS.UNAUTHENTICATED,
-      details: "user session expired",
-    });
-  }
-
-  //   let updateData = {}
-
-  const user = await db.user.update({
-    where: {
-      id: decoded.id,
-    },
-    data: {},
-  });
-
-  if (!user)
-    return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "No user found",
-    });
-
-  callback(null, user);
 };

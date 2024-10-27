@@ -5,24 +5,35 @@ export default async (call, callback) => {
   try {
     const { userId, cartId } = call.request;
 
+    console.log(userId, cartId);
+
     // check for system role
 
     if (!userId) throw new Error("Required user id");
 
-    const cartProducts = await db.cartProduct.deleteMany({
+    const cart = await db.cart.findFirst({
       where: {
-        cartId: cartId,
+        userId: userId,
       },
     });
 
-    const cart = await db.cart.delete({
+    if (!cart) throw new Error("No cart found for the user");
+
+    await db.cartProduct.deleteMany({
       where: {
-        id: cartId,
+        cartId: cart.id,
       },
     });
 
-    callback(null, { message: "cart deleted", cartId: cart.id });
+    await db.cart.delete({
+      where: {
+        userId,
+      },
+    });
+
+    callback(null, { message: "cart deleted" });
   } catch (error) {
+    console.log(error);
     callback({
       code: GRPC_STATUS.PERMISSION_DENIED,
       details: error.message,

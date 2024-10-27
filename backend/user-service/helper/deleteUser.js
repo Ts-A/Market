@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
 import cartClient from "../configs/CartClient.js";
 
-const deleteCart = (userId, cartId) => {
-  console.log(userId, cartId);
+const ALLOWED_ROLES = ["user", "system"];
+
+const deleteCart = (userId) => {
   return new Promise((resolve, reject) => {
-    cartClient.deleteCart({ userId, cartId }, (err, data) => {
+    cartClient.deleteCart({ userId, cartId: "" }, (err, data) => {
       if (err) {
-        console.log(err);
         reject("Unable to delete cart for the user");
       }
 
@@ -19,47 +19,36 @@ const deleteCart = (userId, cartId) => {
 };
 
 export default async (call, callback) => {
-  const { token: authToken } = call.request;
+  try {
+    const token = call.metadata.get("authorization")[0];
+    if (!token) throw new Error("Requires an authorization to access.");
 
-  if (!authToken)
-    return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "No token",
+    const authToken = token.split("Bearer ")[1];
+    const userPayload = jwt.verify(authToken, "secret");
+
+    if (!ALLOWED_ROLES.includes(userPayload.role))
+      throw new Error("Unauthorized to access.");
+
+    if (!(await redis.sIsMember(userPayload.id, userPayload.sessionId)))
+      throw new Error("Session has expired");
+
+    await deleteCart(userPayload.id);
+
+    const user = await db.user.delete({
+      where: {
+        id: userPayload.id,
+      },
     });
 
-  var decoded;
+    if (!user) throw new Error("No user found.");
 
-  try {
-    decoded = jwt.verify(authToken, "secret");
-    if (!(await redis.sIsMember(decoded.id, decoded.sessionId))) {
-      return callback({
-        code: GRPC_STATUS.UNAUTHENTICATED,
-        details: "user session expired",
-      });
-    }
+    await redis.del(userPayload.id);
+
+    callback(null, { message: "User successfully deleted" });
   } catch (error) {
     return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "Invalid user token",
+      code: GRPC_STATUS.PERMISSION_DENIED,
+      details: error.message,
     });
   }
-
-  const response = await deleteCart(decoded.id, decoded.cartId);
-
-  const user = await db.user.delete({
-    where: {
-      id: decoded.id,
-    },
-  });
-
-  if (!user)
-    return callback({
-      code: GRPC_STATUS.NOT_FOUND,
-      details: "No user found",
-    });
-
-  await redis.del(decoded.id);
-
-  console.log(response);
-  callback(null, { message: "User successfully deleted" });
 };

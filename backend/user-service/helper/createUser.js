@@ -17,58 +17,55 @@ const createCart = (userId) => {
 };
 
 export default async (call, callback) => {
-  const { name, email, role, password } = call.request;
+  try {
+    const { name, email, role, password } = call.request;
 
-  if (!name || !email || !role || !password)
-    return callback({
-      code: grpc.status.INVALID_ARGUMENT,
-      details: "missing fields required",
+    if (!name || !email || !role || !password)
+      throw new Error("Required fields: name, email, role, password");
+
+    const existingUser = await db.user.findFirst({
+      where: {
+        email: email,
+      },
     });
 
-  const existingUser = await db.user.findFirst({
-    where: {
-      email: email,
-    },
-  });
+    if (existingUser) throw new Error("User with email already exists.");
 
-  if (existingUser)
-    return callback({
-      code: GRPC_STATUS.ALREADY_EXISTS,
-      details: "user with email already exists",
+    const SALT = brcypt.genSaltSync(+process.env.SALT_ROUNDS);
+    const brcyptPassword = brcypt.hashSync(password, SALT);
+
+    const user = await db.user.create({
+      data: {
+        id: uuidv4(),
+        name,
+        email,
+        role,
+        password: brcyptPassword,
+      },
+      select: {
+        id: true,
+        role: true,
+      },
     });
 
-  const SALT = brcypt.genSaltSync(+process.env.SALT_ROUNDS);
-  const brcyptPassword = brcypt.hashSync(password, SALT);
+    if (!user) throw new Error("Unable to create a user");
 
-  const user = await db.user.create({
-    data: {
-      id: uuidv4(),
-      name,
-      email,
-      role,
-      password: brcyptPassword,
-    },
-    select: {
-      id: true,
-      email: true,
-      role: true,
-    },
-  });
+    const userPayload = {
+      role: user.role,
+      id: user.id,
+      sessionId: uuidv4(),
+    };
 
-  if (!user)
-    callback({ code: GRPC_STATUS.UNKNOWN, details: "something went wrong" });
+    if (user.role === "user") {
+      userPayload.cartId = await createCart(user.id);
+    }
 
-  let cartId = "";
-  if (user.role === "user") cartId = await createCart(user.id);
+    const token = jwt.sign(userPayload, "secret");
 
-  const sessionId = uuidv4();
+    await redis.sAdd(user.id, userPayload.sessionId);
 
-  const token = jwt.sign(
-    { email: user.email, role: user.role, id: user.id, sessionId, cartId },
-    "secret"
-  );
-
-  await redis.sAdd(user.id, sessionId);
-
-  callback(null, { token });
+    callback(null, { token });
+  } catch (error) {
+    callback({ code: GRPC_STATUS.CANCELLED, details: error.message });
+  }
 };
