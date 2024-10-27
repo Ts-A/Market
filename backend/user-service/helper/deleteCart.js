@@ -4,7 +4,7 @@ export default (userId) => {
   return new Promise((resolve, reject) => {
     cartClient.deleteCart({ userId, cartId: "" }, (err, data) => {
       if (err) {
-        reject(new Error(err.details));
+        reject({ message: err.details });
       }
 
       resolve(data);

@@ -3,17 +3,20 @@ import { v4 as uuidv4 } from "uuid";
 import { status as GRPC_STATUS } from "@grpc/grpc-js";
 import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
+import { authUser } from "../helper/index.js";
+
+const ALLOWED_ROLES = ["admin"];
 
 export default async (call, callback) => {
   try {
-    const { category, price, stock, name, token } = call.request;
-    if (!token) throw new Error("JWT Missing");
-    var decoded;
+    const { category, price, stock, name } = call.request;
 
-    decoded = jwt.verify(token, "secret");
-    if (decoded.role !== "admin") throw new Error("Not admin");
-    if (!(await redis.sIsMember(decoded.id, decoded.sessionId)))
-      throw new Error("Session expired");
+    await authUser(
+      call.metadata.get("authorization")
+        ? call.metadata.get("authorization")[0]
+        : "",
+      ALLOWED_ROLES
+    );
 
     const product = await db.product.create({
       data: {

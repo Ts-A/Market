@@ -1,9 +1,13 @@
 export default (service) => ({
   getProduct: (req, res) => {
-    service.getProduct({ id: req.params.id }, (err, product) => {
-      if (err) return res.json({ err });
-      return res.json({ product });
-    });
+    service.getProduct(
+      { id: req.params.id },
+      req.grpcMetadata,
+      (err, product) => {
+        if (err) return res.json({ err });
+        return res.json({ product });
+      }
+    );
   },
   getAllProducts: (req, res) => {
     service.getAllProducts({}, (err, products) => {

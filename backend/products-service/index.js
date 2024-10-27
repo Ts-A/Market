@@ -1,6 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
-import productHelper from "./helpers/index.js";
+import productHandler from "./handler/index.js";
 
 const PROTO_PATH = "./protos/product.proto";
 
@@ -15,7 +15,7 @@ const productProto = grpc.loadPackageDefinition(productProtoPackageDefinition);
 
 const server = new grpc.Server();
 
-server.addService(productProto.ProductService.service, productHelper);
+server.addService(productProto.ProductService.service, productHandler);
 
 server.bindAsync(
   "127.0.0.1:30044",

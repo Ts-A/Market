@@ -6,12 +6,7 @@ const ALLOWED_ROLES = ["user", "system"];
 
 export default async (call, callback) => {
   try {
-    const userPayload = await authUser(
-      call.metadata.get("authorization")
-        ? call.metadata.get("authorization")[0]
-        : "",
-      ALLOWED_ROLES
-    );
+    const userPayload = await authUser(call.metadata, ALLOWED_ROLES);
 
     const user = await db.user.findFirst({
       where: {

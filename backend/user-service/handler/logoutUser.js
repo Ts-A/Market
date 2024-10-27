@@ -1,7 +1,7 @@
 import { status as GRPC_STATUS } from "@grpc/grpc-js";
 import jwt from "jsonwebtoken";
 import redis from "../configs/RedisClient.js";
-import { authUser } from "../helper/authUser.js";
+import { authUser } from "../helper/index.js";
 
 export default async (call, callback) => {
   try {
