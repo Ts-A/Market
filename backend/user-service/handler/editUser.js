@@ -8,12 +8,7 @@ const ALLOWED_UPDATES = ["email", "name"];
 // TODO: Implement edit user
 export default async (call, callback) => {
   try {
-    const userPayload = await authUser(
-      call.metadata.get("authorization")
-        ? call.metadata.get("authorization")[0]
-        : "",
-      ALLOWED_ROLES
-    );
+    const userPayload = await authUser(call.metadata, ALLOWED_ROLES);
 
     let updateData = {};
 

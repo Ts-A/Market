@@ -1,23 +1,16 @@
 import db from "../configs/PrismaClient.js";
 import { status as GRPC_STATUS } from "@grpc/grpc-js";
-import jwt from "jsonwebtoken";
-import redis from "../configs/RedisClient.js";
+import { authUser, generateOrder } from "../helper/index.js";
+
+const ALLOWED_ROLES = ["user", "system"];
 
 export default async (call, callback) => {
   try {
-    const { token } = call.request;
-    if (!token) throw new Error("Not authorized");
-
-    let decoded = jwt.verify(token, "secret");
-
-    if (decoded.role !== "user") throw new Error("Only accessible for users");
-
-    if (!(await redis.sIsMember(decoded.id, decoded.sessionId)))
-      throw new Error("Session has expired");
+    const userPayload = await authUser(call.metadata, ALLOWED_ROLES);
 
     const cart = await db.cart.findUnique({
       where: {
-        userId: decoded.id,
+        userId: userPayload.id,
       },
       select: {
         products: {
@@ -29,6 +22,7 @@ export default async (call, callback) => {
                 price: true,
                 name: true,
                 category: true,
+                stock: true,
               },
             },
           },
@@ -38,14 +32,20 @@ export default async (call, callback) => {
 
     if (!cart) throw new Error("No cart found");
 
-    const formattedCart = {
-      products: cart.products.map((product) => ({
-        quantity: product.quantity,
-        ...product.product,
-      })),
-    };
+    for (let item of cart.products) {
+      if (item.product.stock < item.quantity)
+        throw new Error("Missing stock for some items");
+    }
 
-    callback(null, formattedCart);
+    const orderSummary = await generateOrder(cart);
+
+    await db.cartProduct.deleteMany({
+      where: {
+        cartId: cart.id,
+      },
+    });
+
+    callback(null, orderSummary);
   } catch (error) {
     callback({ code: GRPC_STATUS.PERMISSION_DENIED, details: error.message });
   }

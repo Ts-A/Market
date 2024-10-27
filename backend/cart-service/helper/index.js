@@ -1,15 +1,5 @@
-import addToCart from "./addToCart.js";
-import emptyCart from "./emptyCart.js";
-import removeFromCart from "./removeFromCart.js";
-import showCart from "./showCart.js";
-import createCart from "./createCart.js";
-import deleteCart from "./deleteCart.js";
+import authUserHelper from "./authUser.js";
+import generateOrderHelper from "./generateOrder.js";
 
-export default {
-  addToCart,
-  removeFromCart,
-  createCart,
-  emptyCart,
-  showCart,
-  deleteCart,
-};
+export const authUser = authUserHelper;
+export const generateOrder = generateOrderHelper;

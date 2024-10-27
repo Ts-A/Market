@@ -11,12 +11,7 @@ export default async (call, callback) => {
   try {
     const { category, price, stock, name } = call.request;
 
-    await authUser(
-      call.metadata.get("authorization")
-        ? call.metadata.get("authorization")[0]
-        : "",
-      ALLOWED_ROLES
-    );
+    await authUser(call.metadata, ALLOWED_ROLES);
 
     const product = await db.product.create({
       data: {

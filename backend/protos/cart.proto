@@ -3,6 +3,7 @@ syntax = "proto3";
 service CartService {
     rpc AddToCart (CartPayload) returns (CartResponse);
     rpc CreateCart (User) returns (CartResponse);
+    rpc CheckoutCart (User) returns (Cart);
     rpc DeleteCart (User) returns (CartResponse);
     rpc EmptyCart (User) returns (CartResponse);
     rpc RemoveFromCart (CartPayload) returns (CartResponse);
@@ -10,14 +11,11 @@ service CartService {
 }
 
 message User {
-    optional string token = 1;
     optional string userId = 2;
-    optional string cartId = 3;
 }
 
 message CartResponse {
     string message = 1;
-    optional string cartId = 2;
 }
 
 message CartPayload {
@@ -32,7 +30,10 @@ message Product {
     string category = 3;
     float price = 4;
     uint32 quantity = 5;
+    optional uint32 expected = 6;
+    optional uint32 available = 7;
 }
+
 
 message Cart {
     repeated Product products = 1;

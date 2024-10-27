@@ -8,6 +8,7 @@ export default (controller) => {
   cartRouter.post(`/add`, authMiddleware, controller.addToCart);
   cartRouter.post(`/remove`, authMiddleware, controller.removeFromCart);
   cartRouter.post(`/empty`, authMiddleware, controller.emptyCart);
+  cartRouter.post(`/checkout`, authMiddleware, controller.checkoutCart);
 
   return cartRouter;
 };

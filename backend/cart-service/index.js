@@ -1,6 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
-import cartHelper from "./helper/index.js";
+import cartHandler from "./handler/index.js";
 
 const PROTO_PATH = "./protos/cart.proto";
 
@@ -15,7 +15,7 @@ const cartProto = grpc.loadPackageDefinition(cartProtoPackageDefinition);
 
 const server = new grpc.Server();
 
-server.addService(cartProto.CartService.service, cartHelper);
+server.addService(cartProto.CartService.service, cartHandler);
 
 server.bindAsync(
   "127.0.0.1:30045",

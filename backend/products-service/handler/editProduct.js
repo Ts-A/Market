@@ -9,12 +9,7 @@ export default async (call, callback) => {
   try {
     const { id } = call.request;
 
-    await authUser(
-      call.metadata.get("authorization")
-        ? call.metadata.get("authorization")[0]
-        : "",
-      ALLOWED_ROLES
-    );
+    await authUser(call.metadata, ALLOWED_ROLES);
 
     if (!id) throw new Error("Product id required");
 
